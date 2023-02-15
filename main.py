@@ -6,6 +6,7 @@ import json
 import os
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
 
 
 # loding the enviorment file
@@ -48,14 +49,16 @@ def pingPage():
 
 
 @app.post("/send-feedback")
-async def recieveFeedBack(feedback : Feedback):
+def recieveFeedBack(feedback : Feedback):
     item_dict = feedback.dict()
     dhash = hashlib.md5()
+    current_time = str(datetime.now())
     try:
         encoded = json.dumps(item_dict, sort_keys=True).encode()
-        await dhash.update(encoded)
+        dhash.update(encoded)
         item_dict["hash"] = dhash.hexdigest() 
-        await feedbacks_db.put(item_dict)
-        return {"code" : 200}
-    except:
-        return{"code" : 532 , "value" : "data is not accepted by the deta base"}
+        item_dict["datetime"] = current_time
+        result = feedbacks_db.put(item_dict)
+        return {"code" : result}
+    except Exception as e:
+        return{"code" : 532 , "value" : e}
