@@ -7,4 +7,6 @@ micros:
     primary: true
     public_routes:
       - "/ping" # exact match
-      - "/send-feedback" #exact match
+      - "/send-feedback" # exact match
+      - "/log-in" # exact match
+      
